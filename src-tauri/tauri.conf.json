@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "tauri-template",
+  "version": "0.1.0",
+  "identifier": "com.hkandala.tauri-template",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Main Window",
+        "url": "index.html#/main",
+        "width": 800,
+        "height": 600,
+        "center": true
+      },
+      {
+        "label": "glass",
+        "title": "Liquid Glass",
+        "url": "index.html#/glass",
+        "width": 500,
+        "height": 380,
+        "center": true,
+        "transparent": true,
+        "decorations": true,
+        "titleBarStyle": "Transparent"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
