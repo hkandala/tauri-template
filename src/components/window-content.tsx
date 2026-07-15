@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { info } from "@tauri-apps/plugin-log";
 
@@ -8,13 +10,19 @@ const TAURI_DOCS_URL = "https://tauri.app/";
 type WindowContentProps = {
   title: string;
   subtitle: string;
+  /** Optional extra buttons rendered beside the "Open Tauri Docs" button. */
+  actions?: ReactNode;
 };
 
 /**
  * Shared centered content for each window: a title, a subtitle, and a button
  * that opens the Tauri docs in the user's default browser via the opener plugin.
  */
-export function WindowContent({ title, subtitle }: WindowContentProps) {
+export function WindowContent({
+  title,
+  subtitle,
+  actions,
+}: WindowContentProps) {
   const openDocs = async () => {
     // tauri-plugin-log writes to stdout + the app log file.
     info(`opening ${TAURI_DOCS_URL}`);
@@ -28,7 +36,12 @@ export function WindowContent({ title, subtitle }: WindowContentProps) {
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
-      <Button onClick={openDocs}>Open Tauri Docs</Button>
+      <div className="flex items-center gap-3">
+        <Button variant="outline" onClick={openDocs}>
+          Open Tauri Docs
+        </Button>
+        {actions}
+      </div>
     </div>
   );
 }

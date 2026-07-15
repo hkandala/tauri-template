@@ -14,16 +14,25 @@ import { GlassWindow } from "@/windows/glass-window";
  */
 export function App() {
   return (
-    <Router hook={useHashLocation}>
-      <Switch>
-        <Route path="/main" component={MainWindow} />
-        <Route path="/glass" component={GlassWindow} />
-        {/* Fallback: anything else lands on the main window. */}
-        <Route>
-          <Redirect to="/main" />
-        </Route>
-      </Switch>
-    </Router>
+    <>
+      {/*
+        Both windows use an overlay title bar with no native draggable strip,
+        so this element provides the drag region. `data-tauri-drag-region` lets
+        the user move the window by dragging it (and double-click to maximize).
+        Living here in the app root, it applies to every window/route.
+      */}
+      <div data-tauri-drag-region className="fixed inset-x-0 top-0 z-50 h-7" />
+      <Router hook={useHashLocation}>
+        <Switch>
+          <Route path="/main" component={MainWindow} />
+          <Route path="/glass" component={GlassWindow} />
+          {/* Fallback: anything else lands on the main window. */}
+          <Route>
+            <Redirect to="/main" />
+          </Route>
+        </Switch>
+      </Router>
+    </>
   );
 }
 

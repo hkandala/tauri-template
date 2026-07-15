@@ -18,18 +18,9 @@
         "url": "index.html#/main",
         "width": 800,
         "height": 600,
-        "center": true
-      },
-      {
-        "label": "glass",
-        "title": "Liquid Glass",
-        "url": "index.html#/glass",
-        "width": 500,
-        "height": 380,
         "center": true,
-        "transparent": true,
-        "decorations": true,
-        "titleBarStyle": "Transparent"
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
       }
     ],
     "security": {

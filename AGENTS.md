@@ -1,20 +1,18 @@
-# AGENTS.md
+# tauri-template
 
-Guidance for AI agents working in this repo. Keep changes minimal and idiomatic — this is a boilerplate.
+A Tauri v2 desktop boilerplate: React + TS + Vite frontend, Rust backend. Tailwind v4 + shadcn/ui, wouter routing, zustand, and a set of Tauri plugins (opener, log, store, shell, liquid-glass). See `README.md` for the full stack. Keep changes minimal and idiomatic — this is a boilerplate.
 
-## What this is
+## Architecture
 
-A Tauri v2 desktop boilerplate: React + TS + Vite frontend, Rust backend. Tailwind v4 + shadcn/ui, wouter routing, zustand, and a set of Tauri plugins (opener, log, store, shell, liquid-glass). See `README.md` for the full stack.
-
-## Architecture you must know
-
-- **One bundle, many windows, routed by hash.** Each window loads the same `index.html` at a different hash and wouter renders the match. Windows are declared statically in `src-tauri/tauri.conf.json` (`app.windows[]`, each with `label` + `url: "index.html#/<route>"`). Routes live in `src/App.tsx` (`useHashLocation`).
-- **Adding a window requires THREE edits** (keep them in sync):
-  1. `src-tauri/tauri.conf.json` → new entry in `windows[]` with a unique `label` + hash `url`.
+- **One bundle, many windows, routed by hash.** Each window loads the same `index.html` at a different hash and wouter renders the match. Routes live in `src/App.tsx` (`useHashLocation`).
+- **On launch only `main` opens.** It's the sole entry in `src-tauri/tauri.conf.json` `app.windows[]` (hash `index.html#/main`, `Overlay` title bar). The `glass` window is created on demand by the `open_glass_window` Rust command in `src-tauri/src/lib.rs`, invoked from `main-window.tsx`.
+- **Adding a window** (keep these in sync):
+  1. `src/App.tsx` → add a `<Route path="/<route>">`.
   2. `src-tauri/capabilities/default.json` → add the `label` to `windows[]`, else the window has no permissions.
-  3. `src/App.tsx` → add a `<Route path="/<route>">`.
+  3. Open it: either add an entry to `windows[]` in `tauri.conf.json` (opens on launch) or build it on demand — copy the `open_glass_window` command, or use the JS `WebviewWindow` API (which then needs `core:webview:allow-create-webview-window` in the capability).
+- **Window dragging.** Both windows use an overlay title bar (no native drag strip), so `App.tsx` renders a top `data-tauri-drag-region` strip that applies to every route. It needs `core:window:allow-start-dragging` in the capability. Don't put interactive controls inside a drag region — clicks get swallowed by the drag.
 - **Dark mode + transparency.** Dark is default via `<html class="dark">` in `index.html`. `html/body` are transparent (`src/App.css`) so the glass window shows the desktop through it — so **each route must paint its own background** (see `main-window.tsx` using `bg-background`). Don't add `bg-*` to `body`.
-- **Liquid glass** is applied frontend-side in `src/windows/glass-window.tsx` via `setLiquidGlassEffect()` from `tauri-plugin-liquid-glass-api`; it targets the current window automatically. It needs `transparent: true` on the window (config) + `macOSPrivateApi: true` (already set). Full effect is macOS 26+; older macOS falls back to vibrancy; other platforms no-op.
+- **Liquid glass** is applied frontend-side in `src/windows/glass-window.tsx` via `setLiquidGlassEffect()` from `tauri-plugin-liquid-glass-api`; it targets the current window automatically. It needs the window built with `transparent(true)` (see `open_glass_window`) + `macOSPrivateApi: true` (already set). Full effect is macOS 26+; older macOS falls back to vibrancy; other platforms no-op.
 
 ## Conventions
 

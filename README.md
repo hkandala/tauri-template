@@ -1,50 +1,44 @@
 # tauri-template
 
-A minimal, reusable [Tauri v2](https://tauri.app/) desktop boilerplate: **React + TypeScript + Vite** on the frontend, Rust on the backend, with Tailwind CSS + shadcn/ui, multi-window hash routing, and the native macOS **liquid glass** effect wired up.
+A reusable, cross-platform desktop app starter built on **[Tauri 2](https://tauri.app/) + Rust** with a **React + Vite + TypeScript** frontend, styled with **Tailwind CSS v4 + shadcn/ui**, and managed with **pnpm**. Clone it, rename it, and start building.
 
-On launch it opens **two windows**, each rendered from the same bundle by a different hash route:
+It ships a small but complete example: multi-window hash routing, a Rust command invoked from the UI, persistent storage, structured logging, and the native macOS **liquid glass** effect — all wired up and ready to extend.
 
-- **`#/main`** — a regular (opaque) window.
-- **`#/glass`** — a transparent window with the native macOS liquid glass effect.
+## Features
 
-Both show centered text and a button that opens the Tauri docs in the browser.
+- **Tauri 2** desktop shell with a Rust backend (`src-tauri/`).
+- **React 19 + Vite 7 + TypeScript** frontend with the `@ → src` path alias and strict type-checking.
+- **Tailwind CSS v4** (via `@tailwindcss/vite`) and **shadcn/ui** (new-york style, `neutral` base, dark mode by default).
+- **Multi-window, one bundle** — every window loads the same `index.html` and is routed by hash with [wouter](https://github.com/molefrog/wouter).
+- **[zustand](https://github.com/pmndrs/zustand)** for state management (installed, ready to use).
+- Preconfigured Tauri plugins: `opener`, `log`, `store`, `shell`, and [`liquid-glass`](https://github.com/hkandala/tauri-plugin-liquid-glass).
+- Example windows: an opaque **main** window and an on-demand transparent **liquid glass** window.
+- `prettier` + `cargo fmt` formatting and `pnpm` scripts for the common workflows.
 
-## Stack
+## Prerequisites
 
-### Frontend (TypeScript)
+- **Rust toolchain** — install via [rustup](https://rustup.rs/).
+- **Node.js 20+** and **pnpm** (`npm i -g pnpm`).
+- **Tauri system dependencies** for your OS — see the [Tauri prerequisites](https://tauri.app/start/prerequisites/) (Xcode Command Line Tools on macOS, WebView2 + C++ build tools on Windows, `webkit2gtk` on Linux).
 
-| Dependency                                                                               | Purpose                                                             | Docs                                                                             |
-| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [Vite](https://vite.dev/) + [React](https://react.dev/) + TypeScript                     | App scaffold (`pnpm create tauri-app`, `react-ts` template)         | [create-tauri-app](https://tauri.app/start/create-project/)                      |
-| [Tailwind CSS v4](https://tailwindcss.com/) (`@tailwindcss/vite`)                        | Styling, via the Vite plugin                                        | [Tailwind + Vite](https://tailwindcss.com/docs/installation/using-vite)          |
-| [shadcn/ui](https://ui.shadcn.com/)                                                      | Component library (`new-york` style, `neutral` base, CSS variables) | [shadcn Vite guide](https://ui.shadcn.com/docs/installation/vite)                |
-| [wouter](https://github.com/molefrog/wouter)                                             | Tiny router — one hash route per window                             | [hash routing](https://github.com/molefrog/wouter#customizing-the-location-hook) |
-| [zustand](https://github.com/pmndrs/zustand)                                             | State management (installed; no store created yet)                  | [docs](https://zustand.docs.pmnd.rs/)                                            |
-| `@tauri-apps/plugin-{opener,log,store,shell}`                                            | JS bindings for the Tauri plugins                                   | [Tauri plugins](https://tauri.app/plugin/)                                       |
-| [`tauri-plugin-liquid-glass-api`](https://github.com/hkandala/tauri-plugin-liquid-glass) | JS bindings for the liquid glass effect                             | [plugin repo](https://github.com/hkandala/tauri-plugin-liquid-glass)             |
+## Quick start
 
-### Backend (Rust)
+```bash
+pnpm install          # install frontend deps (Rust crates build on first run)
+pnpm tauri dev        # run the app in development with hot reload
+pnpm tauri build      # build a production bundle (.app + .dmg on macOS)
+```
 
-| Crate                                                                                | Purpose                                                                 | Docs                                                                 |
-| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `tauri` (feature `macos-private-api`)                                                | Core; the feature enables transparent windows + private macOS APIs      | [Tauri](https://tauri.app/)                                          |
-| [`tauri-plugin-opener`](https://tauri.app/plugin/opener/)                            | Open URLs / files in the default app                                    | [docs](https://tauri.app/plugin/opener/)                             |
-| [`tauri-plugin-log`](https://tauri.app/plugin/logging/)                              | Logging to stdout, webview console, and file                            | [docs](https://tauri.app/plugin/logging/)                            |
-| [`tauri-plugin-store`](https://tauri.app/plugin/store/)                              | Persistent JSON key/value store                                         | [docs](https://tauri.app/plugin/store/)                              |
-| [`tauri-plugin-shell`](https://tauri.app/plugin/shell/)                              | Spawn shell commands / child processes                                  | [docs](https://tauri.app/plugin/shell/)                              |
-| [`tauri-plugin-liquid-glass`](https://github.com/hkandala/tauri-plugin-liquid-glass) | Native macOS 26+ liquid glass (falls back to vibrancy; no-op off macOS) | [plugin repo](https://github.com/hkandala/tauri-plugin-liquid-glass) |
+Other useful scripts:
 
-## How it's wired
+```bash
+pnpm build            # frontend only: tsc (strict) + vite build
+pnpm format           # prettier (frontend) + cargo fmt (rust)
+pnpm format:check     # prettier check without writing
+pnpm update-deps      # update pnpm + cargo dependencies
 
-- **Path alias** `@ -> src` is set in both `vite.config.ts` and `tsconfig.json`.
-- **Tailwind v4** is enabled by the `@tailwindcss/vite` plugin; global styles + the shadcn theme tokens live in `src/App.css` (imported in `src/main.tsx`).
-- **shadcn/ui** is configured via `components.json`; components go in `src/components/ui`. Add more with the CLI (see below).
-- **Dark mode is the default** — `<html class="dark">` in `index.html` applies the shadcn dark tokens. The document background is kept transparent so the glass window shows through; each route paints its own background (the main window uses `bg-background`).
-- **Windows + routing:** both windows are declared statically in `src-tauri/tauri.conf.json` with a hash URL (`index.html#/main`, `index.html#/glass`). `src/App.tsx` uses wouter's `useHashLocation` hook to render the matching component. To add a window: add an entry to the `windows` array, add its label to `src-tauri/capabilities/default.json`, and add a `<Route>` in `App.tsx`.
-- **Rust plugins** are registered in `src-tauri/src/lib.rs`; the log plugin defaults to `Info`.
-- **Capabilities:** `src-tauri/capabilities/default.json` grants both windows (`["main", "glass"]`) the default permissions for every plugin, including `liquid-glass:default`.
-- **Liquid glass** is applied from the frontend in `src/windows/glass-window.tsx` via `setLiquidGlassEffect(...)`, which targets the current window automatically.
-- Uses the **default Tauri app icons** from the scaffold.
+pnpm dlx shadcn@latest add <component>   # add a shadcn/ui component
+```
 
 ## Project structure
 
@@ -54,36 +48,52 @@ Both show centered text and a button that opens the Tauri docs in the browser.
 ├── vite.config.ts                 # @ alias + tailwind plugin
 ├── src/
 │   ├── main.tsx                   # entry; imports App.css
-│   ├── App.tsx                    # wouter hash router
+│   ├── App.tsx                    # wouter hash router + window drag region
 │   ├── App.css                    # tailwind + shadcn theme tokens
 │   ├── lib/utils.ts               # cn() helper
 │   ├── components/
 │   │   ├── ui/button.tsx          # shadcn component
-│   │   └── window-content.tsx     # shared centered text + docs button
+│   │   └── window-content.tsx     # shared centered content
 │   └── windows/
 │       ├── main-window.tsx        # /main route
 │       └── glass-window.tsx       # /glass route (applies liquid glass)
 └── src-tauri/
     ├── Cargo.toml                 # rust deps
-    ├── tauri.conf.json            # two-window config + macOSPrivateApi
-    ├── capabilities/default.json  # permissions for both windows
-    └── src/lib.rs                 # plugin registration
+    ├── tauri.conf.json            # window config + macOSPrivateApi
+    ├── capabilities/default.json  # plugin permissions per window
+    └── src/lib.rs                 # plugin registration + commands
 ```
 
-## Commands
+## How it works
 
-```bash
-pnpm install          # install deps
-pnpm tauri dev        # run the app in dev
-pnpm tauri build      # build the app bundle (.app + .dmg on macOS)
-pnpm build            # frontend only (tsc + vite build)
-pnpm format           # prettier (frontend) + cargo fmt (rust)
+- **One bundle, many windows, routed by hash.** Each window loads the same `index.html` at a different hash; `src/App.tsx` uses wouter's `useHashLocation` to render the match (`#/main` → `MainWindow`, `#/glass` → `GlassWindow`).
+- **On launch only `main` opens** (declared in `src-tauri/tauri.conf.json`). The glass window is created on demand by the `open_glass_window` Rust command in `src-tauri/src/lib.rs`, invoked from the UI via `invoke("open_glass_window")`.
+- **Overlay title bars + dragging.** Both windows hide the native title bar, so `App.tsx` renders a top `data-tauri-drag-region` strip (which needs `core:window:allow-start-dragging` in the capability).
+- **Dark mode + transparency.** Dark is the default via `<html class="dark">`; `html`/`body` are kept transparent so the glass window shows the desktop through it — so each route paints its own background.
+- **Capabilities.** `src-tauri/capabilities/default.json` grants both windows the default permissions for every plugin.
 
-# add more shadcn components
-pnpm dlx shadcn@latest add <component>
-```
+### Adding a window
 
-## Requirements
+1. Add a `<Route path="/<route>">` in `src/App.tsx`.
+2. Add the window's `label` to `windows[]` in `src-tauri/capabilities/default.json` (otherwise it has no permissions).
+3. Open it — either declare it in `app.windows[]` in `tauri.conf.json` (opens on launch) or build it on demand (copy the `open_glass_window` command).
 
-- Node + pnpm, and the [Rust toolchain](https://tauri.app/start/prerequisites/).
-- The full liquid glass effect needs **macOS 26+**; older macOS falls back to `NSVisualEffectView`, and non-macOS platforms treat the glass calls as safe no-ops.
+### Adding a plugin
+
+Register the Rust plugin in `src-tauri/src/lib.rs` and add its `<plugin>:default` (or a more specific) permission to `src-tauri/capabilities/default.json`.
+
+## Use it as a template
+
+1. Click **Use this template** on GitHub (or clone and reinitialize git).
+2. Rename the project — search and replace `tauri-template`:
+   - `name` in `package.json`
+   - `package.name` and `lib.name` (`tauri_template_lib`) in `src-tauri/Cargo.toml`
+   - `productName` and `identifier` (`com.hkandala.tauri-template`) in `src-tauri/tauri.conf.json`
+   - `<title>` in `index.html`, plus the headings in `AGENTS.md` and this README
+3. Replace the icons in `src-tauri/icons/` (regenerate with `pnpm tauri icon <path-to-png>`).
+4. Remove the example `glass` window if you don't need it.
+
+## Notes
+
+- The full **liquid glass** effect targets **macOS 26+**; older macOS falls back to `NSVisualEffectView` vibrancy, and non-macOS platforms treat the glass calls as safe no-ops. Everything else is cross-platform.
+- `AGENTS.md` documents the architecture and conventions for AI coding agents working in the repo.

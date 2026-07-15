@@ -10,7 +10,12 @@
     "tauri": "tauri",
     "format": "pnpm format:frontend && pnpm format:rust",
     "format:frontend": "prettier --write .",
-    "format:rust": "cd src-tauri && cargo fmt"
+    "format:rust": "cd src-tauri && cargo fmt",
+    "format:check": "prettier --check .",
+    "update-deps": "pnpm update-deps:frontend && pnpm update-deps:rust",
+    "update-deps:frontend": "pnpm update",
+    "update-deps:rust": "cd src-tauri && cargo update",
+    "precommit": "pnpm update-deps && pnpm format"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",
