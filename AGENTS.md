@@ -1,6 +1,6 @@
 # tauri-template
 
-A Tauri v2 desktop boilerplate: React + TS + Vite frontend, Rust backend. Tailwind v4 + shadcn/ui, wouter routing, zustand, and a set of Tauri plugins (opener, log, store, shell, liquid-glass). See `README.md` for the full stack. Keep changes minimal and idiomatic — this is a boilerplate.
+A Tauri v2 desktop starter: React + TS + Vite frontend, Rust backend. Tailwind v4 + shadcn/ui, wouter routing, zustand, and a set of Tauri plugins (opener, log, store, shell, liquid-glass). See `README.md` for the full stack. Keep changes minimal and idiomatic.
 
 ## Architecture
 
