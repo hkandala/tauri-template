@@ -1,0 +1,15 @@
+# pnpm reads build-script approvals from this file.
+#
+# esbuild (Vite's bundler) ships its native binary via a postinstall build
+# script. Recent pnpm blocks unapproved build scripts by default, so without
+# this approval `pnpm install` fails with ERR_PNPM_IGNORED_BUILDS and the
+# esbuild binary is never linked — which breaks `pnpm build` / `pnpm tauri
+# build`. We keep the allow-list explicit instead of disabling pnpm's
+# build-script safety check globally.
+#
+# `allowBuilds` is the key used by pnpm 11+; `onlyBuiltDependencies` is kept
+# for pnpm 10.x compatibility. Both list only esbuild.
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild
